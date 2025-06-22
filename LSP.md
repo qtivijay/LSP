@@ -1,5 +1,5 @@
 # Linus System 
-### Linux system into 5 subsystems
+### Linux system divided into 5 subsystems
 - File management subsystem
 - Process management subsystem
 - Driver/ Device management subsystem
