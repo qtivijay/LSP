@@ -28,8 +28,8 @@ A Program running in user space of RAM is called process
 - Total RAM is divided into two parts
   - Lower part of RAM is Kernel space of RAM
   - Upper part of RAM is user space of RAM.
-  - When a.out is executed , the contents of a.out (bss,data,text) are copied to userpsace of RAM.
-  - Two more segements gets added when a.out comes to execution i.e *heap* and *stack*.
+- When a.out is executed , the contents of a.out (bss,data,text) are copied to userpsace of RAM.
+- Two more segements gets added when a.out comes to execution i.e **heap** and **stack**.
   ```
    What are the contents of a program ..?
    Text , Data , BSS
@@ -38,4 +38,18 @@ A Program running in user space of RAM is called process
   what are the contents of a process ..?
   Text , Data , BSS , Heap , Stack
   ```
+
+**User Space Memory Layout of a C Process**
+
+| Memory Region               | Description                                      | Growth Direction     |
+|----------------------------|--------------------------------------------------|----------------------|
+| **High Memory Addresses**  |                                                  |                      |
+| Stack                      | Function calls, local variables, return addresses| ⬇️ Grows downward     |
+| Memory-mapped files & shared libs | Loaded shared libraries, `mmap()` regions         | — (varies)           |
+| Heap                       | Dynamic memory (`malloc`, `calloc`, etc.)        | ⬆️ Grows upward       |
+| BSS (.bss)                 | Uninitialized global/static variables            | —                    |
+| Data (.data)               | Initialized global/static variables              | —                    |
+| Text (.text)               | Executable code (machine instructions)           | —                    |
+| **Low Memory Addresses**   |                                                  |                      |
+
     
