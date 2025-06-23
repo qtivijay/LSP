@@ -52,4 +52,19 @@ A Program running in user space of RAM is called process
 | Text (.text)               | Executable code (machine instructions)           | —                    |
 | **Low Memory Addresses**   |                                                  |                      |
 
-    
+- when program comes to execution in **userspace** , at the same time for every process there will be block created in **kernel space** of RAM this is called as **Process control Block** (**PCB**) also called as **process descriptor block**. 
+-  For every process **memory segements** are allocated in userspace of RAM and **process control block** is allocated in kernel space of RAM.
+-  For every process there will be **unique** process control block in kernel space of RAM.
+-  Each process will have its own **PCB**.
+-  There will be common memory segments between processes but **PCB** is unique for each process.
+- **PCB** is a structure and it contains information related to process.
+  - PID (Process ID)
+  - PPID (Parent process ID)
+  - FD table (File descriptor table)
+  - SDT (Signal disposition table)
+  - Page table
+- All these PCB's in kernel space are maintained as nodes in Double linked list.
+- Process management subsystem is creating the PCB's and maintaining the PCB's in kernel space.
+- **Scheduler** will have access to entire linked list in kernel space.
+- **Scheduler** decides which program should run next.
+ 
