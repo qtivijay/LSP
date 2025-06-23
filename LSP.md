@@ -66,5 +66,8 @@ A Program running in user space of RAM is called process
 - All these PCB's in kernel space are maintained as nodes in Double linked list.
 - Process management subsystem is creating the PCB's and maintaining the PCB's in kernel space.
 - **Scheduler** will have access to entire linked list in kernel space.
-- **Scheduler** decides which program should run next.
- 
+- **Scheduler** decides which program should run next. It depends on **Schudeling mechanism**
+- There are two primary **Scheduling mechanism**
+  - **round robin** scheduling - used by general purpose operating systems - windows, linux , android.
+  - **preemtive priority based** scheduling - used for RTOS- FreeRTOS , VXworks.
+  - 
