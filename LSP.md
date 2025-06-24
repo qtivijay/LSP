@@ -70,4 +70,62 @@ A Program running in user space of RAM is called process
 - There are two primary **Scheduling mechanism**
   - **round robin** scheduling - used by general purpose operating systems - windows, linux , android.
   - **preemtive priority based** scheduling - used for RTOS- FreeRTOS , VXworks.
-  - 
+-**round Robin** scheduling each process will get equal amount of CPU time for execution.
+  - After expiration of execution of last process, scheduler jumps back to first process in round robin scheduling.
+  **preemptive prioirty** based scheduling - if you have mulitple running processes unlike round robin these process will not get equal amount of CPU time ,the CPU time will be given to highest prioirty task. CPU time execute high priority task until it is done.
+- Difference between round robin and preemptive based scheduling -   every new process is added at the end in round robin but in prioirty based scheuling any new task coming will execute based on priority value is called **nice value**. based on this nice value program will be place in one of the position in linked list.
+- when high priority task comes to execution and takes over the CPU from lower prioty task is called **preemption**.
+- **Advantage of round robin** - every process will get a equal amount of CPU time.
+- **Advantage of preemptive priorty** - Highest priority task will be executed first with out waiting.
+- **context switching**- switching one process to another process
+
+### how to create a process programmatically ..?
+- gcc file.c will give a.out
+- by executing .\a.out will create a process
+
+### how you will create another process from another process ..?
+- **fork** system call
+- if a process call fork then it create a new process called **child process**
+### how does fork system call works ..?
+- fork returns twice  - once in parent process and once in child process
+- in parent process fork return child PID
+- in child process fork return 0
+- based on the return value we will decide which is parent process and which is child process.
+
+```
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+    pid_t pid = fork(); // Create a child process
+
+    if (pid > 0) {
+        // This block is executed by the parent process
+        printf("Parent: My child's PID is %d\n", pid);
+    } else if (pid == 0) {
+        // This block is executed by the child process
+        printf("Child: I'm the child process, and my PID is %d\n", getpid());
+    } else {
+        // fork failed
+        perror("fork");
+        return 1;
+    }
+
+    // Both parent and child execute this
+    printf("Common: PID %d continues execution here\n", getpid());
+    return 0;
+}
+```
+output:
+```
+Parent: My child's PID is 12345
+Common: PID 12344 continues execution here
+Child: I'm the child process, and my PID is 12345
+Common: PID 12345 continues execution here
+```
+- fork() creates a duplicate of the current process.
+- The parent gets the child’s PID as return value.
+- The child gets 0, allowing you to distinguish between the two.
+- Both processes continue from the same line after the fork() call, but take different paths based on the return value.
+
