@@ -128,4 +128,45 @@ Common: PID 12345 continues execution here
 - The parent gets the child’s PID as return value.
 - The child gets 0, allowing you to distinguish between the two.
 - Both processes continue from the same line after the fork() call, but take different paths based on the return value.
+- when fork() system call fails it returns -1.
+### what happens to memory segments and pcbs when child process got created ..?
+- In old kernel (pre 2.2) , When fork() is called, the parent's memory segements is duplicated for the child in user space, and a new PCB is created in kernel space. (PCB is not same)
+- In new kernel , when for() is called , new PCB will be created for child process in kernel space but memory segements in userspace initally will be shared by child process and parent process.
+- when parent and child doing read operation they use same memory segement but not for write operation.
+- If any process(parent or child) tried to write , first copy of memory is created and content which process wants to write will be copied in new memory location is called **write on copy technique**
+- In the new kernel , utilization of the memory is more efficient.
+### 🧠 fork() and Memory Behavior – Copy-On-Write (COW)
+
+#### 🔹 Before `fork()`
++-------------------+
+Parent Process
+Text	Data	Heap	Stack
++-------------------+
+
+#### 🔹 After `fork()` with COW
++-------------------+ +-------------------+ | Parent Process | | Child Process | |-------------------| |-------------------| | Shared Pages | <--> | Shared Pages | | Text | Data | Heap | Stack | +-------------------+ +-------------------+
+(Note: Both processes point to the same physical memory pages.)
+
+#### 🔹 On Write by Child (Copy-On-Write Triggered)
+
++-------------------+ +----------------------------+ | Parent Process | | Child Process | |-------------------| |----------------------------| | Original Pages | | Modified Copy of Page(s)  | Text | Data | Heap* | Stack | +-------------------+ +----------------------------+
+(* Modified page copied and updated in child's page table)
+
+---
+
+### 🧪 Example
+
+```c
+int main() {
+    int x = 10;
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        // Child process
+        x = 20;  // Triggers copy-on-write
+    } else {
+        // Parent process
+        printf("x = %d\n", x);  // Still prints 10
+    }
+}
 
