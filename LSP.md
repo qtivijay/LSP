@@ -202,4 +202,122 @@ ps -ef
     - exit(0) - successful value
     - exit(non zero) - failure
  
-  
+### what happens when parent is terminated even before child ..?
+- child will become **orphan process** if parent is terminated before child process.
+- **init process** will become parent process of child process if parent process is terminated.
+- Child process PPID will be updated with init process PID.
+----
+### If we want parent process to be terminated only after child process terminate, how to do it..? 
+- **wait(&stat)** system call used for completion of child process.
+- stat will have exit code of child process.
+- wait is blocking call
+- block will wait until child termiantes
+- wait will suspend the execution of parent process until status information is recieved from the child.
+- If you have many child process , parent process will not wait for all child process to complete , even if child process terminate using it stat code parent will also terminate. you have to use **wait** as many as you create child processes.
+- **WEXITSTATUS** will help to extract exit status code.
+- **wait** returns the pid of the child process which has been termianted
+```
+#include <stdio.h>
+#include <stdlib.h>     // For exit()
+#include <unistd.h>     // For fork()
+#include <sys/wait.h>   // For wait()
+
+int main() {
+    pid_t pid = fork(); // Create child process
+
+    if (pid < 0) {
+        perror("fork failed");
+        return 1;
+    }
+
+    if (pid == 0) {
+        // Child process
+        printf("Child process (PID: %d): Doing work...\n", getpid());
+        sleep(2);  // Simulate some work
+        printf("Child process exiting with status 42\n");
+        exit(42);  // Exit with a custom status code
+    } else {
+        // Parent process
+        int status;
+        printf("Parent process (PID: %d): Waiting for child...\n", getpid());
+        wait(&status);  // Wait for child to finish
+
+        if (WIFEXITED(status)) {
+            int code = WEXITSTATUS(status);
+            printf("Parent: Child exited with status %d\n", code);
+        } else {
+            printf("Parent: Child terminated abnormally\n");
+        }
+    }
+
+    return 0;
+}
+```
+output : 
+```
+Parent process (PID: 23016): Waiting for child...
+Child process (PID: 23021): Doing work...
+Child process exiting with status 42
+Parent: Child exited with status 42
+```
+### Can wait system call wait for specific child process from multiple child process ..?
+- To wait for a specific child process among several, you should use the **waitpid()** system call instead of the generic wait()
+- wait(&status) waits for any one terminated child.
+- When you've forked multiple child processes, wait() doesn't give you control over which one it waits for.
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid1 = fork();
+
+    if (pid1 == 0) {
+        // First child
+        sleep(3);
+        printf("Child 1 exiting\n");
+        exit(1);
+    }
+
+    pid_t pid2 = fork();
+
+    if (pid2 == 0) {
+        // Second child
+        sleep(1);
+        printf("Child 2 exiting\n");
+        exit(2);
+    }
+
+    // Parent waits for pid2 (second child) specifically
+    int status;
+    pid_t terminated = waitpid(pid2, &status, 0);  // Block until pid2 exits
+
+    if (terminated == pid2 && WIFEXITED(status)) {
+        printf("Parent: Child with PID %d exited with code %d\n",
+               terminated, WEXITSTATUS(status));
+    }
+
+    // Then wait for the other child
+    waitpid(pid1, &status, 0);
+
+    return 0;
+}
+```
+output : 
+```
+Child 2 exiting
+Parent: Child with PID 23373 exited with code 2
+Child 1 exiting
+```
+### 🧾 `waitpid()` Options Reference
+
+| Option        | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| `0`           | **Default blocking behavior** — Waits until the specified child terminates. |
+| `WNOHANG`     | Returns immediately if the child has not exited yet (non-blocking wait).    |
+| `WUNTRACED`   | Also returns if the child was stopped (e.g., via `SIGSTOP`).                |
+| `WCONTINUED`  | Returns if a stopped child is resumed (e.g., via `SIGCONT`).                |
+
+> Header: `#include <sys/wait.h>` is needed to use these macros.
+---
