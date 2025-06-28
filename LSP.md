@@ -169,4 +169,37 @@ int main() {
         printf("x = %d\n", x);  // Still prints 10
     }
 }
+```
+output :
+```
+x = 10
+```
 
+### what happens in PCB when fork() is called
+
+- Parent will have own PCB and child will have thier own PCB when a fork is called.
+- They will not share the same PCB
+- Most of contents of parent's PCB will be copied to child's PCB.
+- not copied elements are - PID and PPID
+  - example : child PPID will be parents PID and PID of child will be newly created
+- FD table and SD table contents are copied to child PCB
+- Signal disposition table will not be copied.
+----
+- Three file systems - which keep track of different components of kernel
+  - /dev , /sys , /proc
+- /proc will track of running process information.
+
+#### how to know running processes information in the system .?
+```
+ps -ef
+```
+----
+#### what happens when child process terminate ..?
+- when child process terminate before parent , kernel informs parent about its termination.
+- When child terminates it should return **exit code** to parent. purpose of exit code to know child process has terminated successfully or there in failure in execution.
+- it is not mandatory to use exit system but it is good to use to let parent process know.
+- using **exit(EXIT CODE)**
+    - exit(0) - successful value
+    - exit(non zero) - failure
+ 
+  
