@@ -242,6 +242,7 @@ int main() {
         printf("Parent process (PID: %d): Waiting for child...\n", getpid());
         wait(&status);  // Wait for child to finish
 
+        //WIFEXITED will return true if child exited normally with out any issue.
         if (WIFEXITED(status)) {
             int code = WEXITSTATUS(status);
             printf("Parent: Child exited with status %d\n", code);
