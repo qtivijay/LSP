@@ -327,7 +327,7 @@ Child 1 exiting
   - Fdtable will be managed by File menagement subsystem.
   - Pagetable will be managed by Memory Management subsystem.
 ### How pagetable is maintained ..?  or How memory management helps process to manage the memory ..?
-- In userspace of RAM we have memory segments- text, data, bass , heap , stack.
+- In Userspace when program loaded from harddisk to RAM , we have memory segments- text, data, bass , heap , stack.
 - The complete memory segment of a process is divided into equal parts of **4kb** called as **virtual pages**.
 - Physical RAM is also divided into equal sized parts of 4KB which is called **physical frames** or **page frames**.
 - Virtual pages are refered using page numbers is called **virtual page numbers** , similary physical frames are also numbered.
@@ -400,7 +400,30 @@ Child 1 exiting
 
 - When a user-space process accesses an address, the **MMU (Memory Management Unit)** uses the **page table** to translate the **virtual page number** into a **physical frame number**.
 
+- CPU always operates on virtual addresses.
+- In page table we also information called **Permissions** which decides memory is readbale or writable.
+    - For example - Txt segament parts in two physical frames , for running program the Txt memory should not be return , so the permission of Txt segement memory is read only
+    - By default all the physical frames in RAM are read and writable , but when procoess is loaded in RAM like some virtaul pages loaded into physcial frames will be applied with some permissions that information will be there in page table. 
+-Pagetable contains permissions access information.
++---------------+-------------------+-------------------+
+| Virtual Page #| Physical Frame #  |   Permissions     |
++---------------+-------------------+-------------------+
+|      0        |         12        |       R--         | ← Text Segment
+|      1        |         15        |       R--         | ← Text Segment
+|      2        |         7         |       RW-         | ← Data Segment
+|      3        |         4         |       RW-         | ← Heap (Growing up)
+|      4        |         -         |       ---         | ← Not loaded (Swapped)
+|      5        |         9         |       RW-         | ← Heap
+|      6        |         2         |       RWX         | ← Stack (Growing down)
++---------------+-------------------+-------------------+
 ----
-
+### Address Transalation
+- When a variable is created it will have virtual address.
+- when these virtual pages are loaded into physical frames , these virtual address are translated into physical address.
+- when we do **&X** of a variable we will get the virtual address.
+- Virtual address = pagenumber * size of page + offset
+  - Page Number	Identifies which virtual page the address belongs to
+  - Offset	Tells how far into that page the data is located
+#### how these address transalation takes place.
 
 
