@@ -322,3 +322,85 @@ Child 1 exiting
 
 > Header: `#include <sys/wait.h>` is needed to use these macros.
 ---
+- Process management creates PCB which has PID,PPID,Fdtable ,Pagetable , signal disposition table
+- Individually these components of PCB is managed by subsystems , For example:
+  - Fdtable will be managed by File menagement subsystem.
+  - Pagetable will be managed by Memory Management subsystem.
+### How pagetable is maintained ..?  or How memory management helps process to manage the memory ..?
+- In userspace of RAM we have memory segments- text, data, bass , heap , stack.
+- The complete memory segment of a process is divided into equal parts of **4kb** called as **virtual pages**.
+- Physical RAM is also divided into equal sized parts of 4KB which is called **physical frames** or **page frames**.
+- Virtual pages are refered using page numbers is called **virtual page numbers** , similary physical frames are also numbered.
+- When the process is started these virtual pages are copied to physical frames.
+- which virtual page is present in which physical frame ,this information is stored in **page table**.
+- Virtual pages stored randomly in physical frames.
+- when process is loaded in parts , some of the virtual pages will be loaded in physical frames and remaining virtual pages are stored in area of harddisk called **swap area**.
+- In linux we called it as **swap area** and in windows it is called **backing store**.
+
+### 🧠 Memory Layout and Page Table Mapping
+
+#### 1️⃣ Virtual Address Space (User Space)
+
+```
++----------------------------+
+| Stack                     |  <-- high address
++----------------------------+
+| Heap                      |
++----------------------------+
+| .bss (uninitialized data) |
++----------------------------+
+| .data (initialized data)  |
++----------------------------+
+| .text (code segment)      |
++----------------------------+
+| NULL                      |  <-- low address
+```
+
+#### 2️⃣ Page Table (Simplified View)
+
+| Virtual Page Number | Physical Frame Number | Valid Bit | Protection |
+|---------------------|------------------------|-----------|------------|
+| 0                   | 5                      | 1         | R-X        |
+| 1                   | 8                      | 1         | RW-        |
+| 2                   | -                      | 0         | ---        |
+| 3                   | 2                      | 1         | RW-        |
+| 4                   | 1                      | 1         | RW-        |
+
+💡 Here:
+- Virtual page 0 is mapped to physical frame 5.
+- Virtual page 2 is **not** present (perhaps swapped out).
+- Protection flags represent Read/Write/Execute permissions.
+
+#### 3️⃣ Physical Memory (4KB Frames)
+
+```
++-----------------+  Frame 0
+| Unused / Other  |
++-----------------+  Frame 1
+| Stack Segment   |
++-----------------+  Frame 2
+| Heap Segment    |
++-----------------+  Frame 3
+| Kernel Space    |
++-----------------+  Frame 4
+| Unused / Other  |
++-----------------+  Frame 5
+| .text Segment   |
++-----------------+  Frame 6
+| Kernel Stack    |
++-----------------+  Frame 7
+| I/O Buffers     |
++-----------------+  Frame 8
+| .data Segment   |
++-----------------+
+```
+
+
+### 🧩 How It All Works Together
+
+- When a user-space process accesses an address, the **MMU (Memory Management Unit)** uses the **page table** to translate the **virtual page number** into a **physical frame number**.
+
+----
+
+
+
