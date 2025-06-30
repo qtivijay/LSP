@@ -405,6 +405,7 @@ Child 1 exiting
     - For example - Txt segament parts in two physical frames , for running program the Txt memory should not be return , so the permission of Txt segement memory is read only
     - By default all the physical frames in RAM are read and writable , but when procoess is loaded in RAM like some virtaul pages loaded into physcial frames will be applied with some permissions that information will be there in page table. 
 -Pagetable contains permissions access information.
+```
 +---------------+-------------------+-------------------+
 | Virtual Page #| Physical Frame #  |   Permissions     |
 +---------------+-------------------+-------------------+
@@ -416,6 +417,7 @@ Child 1 exiting
 |      5        |         9         |       RW-         | ← Heap
 |      6        |         2         |       RWX         | ← Stack (Growing down)
 +---------------+-------------------+-------------------+
+```
 ----
 ### Address Transalation
 - When a variable is created it will have virtual address.
