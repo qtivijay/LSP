@@ -402,8 +402,8 @@ Child 1 exiting
 
 - CPU always operates on virtual addresses.
 - In page table we also information called **Permissions** which decides memory is readbale or writable.
-    - For example - Txt segament parts in two physical frames , for running program the Txt memory should not be return , so the permission of Txt segement memory is read only
-    - By default all the physical frames in RAM are read and writable , but when procoess is loaded in RAM like some virtaul pages loaded into physcial frames will be applied with some permissions that information will be there in page table. 
+    - For example - Txt segament parts in two physical frames , for running program the Txt segement ,  memory should not be written , so the permission of Txt segement memory is read only.
+    - By default all the physical frames in RAM are read and writable , but when procoess is loaded in RAM like some virtaul pages loaded into physcial frames, will be applied with some permissions that information will be there in page table. 
 -Pagetable contains permissions access information.
 ```
 +---------------+-------------------+-------------------+
@@ -426,6 +426,35 @@ Child 1 exiting
 - Virtual address = pagenumber * size of page + offset
   - Page Number	Identifies which virtual page the address belongs to
   - Offset	Tells how far into that page the data is located
+
+ ```
+Step 1: Split Virtual Address into Page Number & Offset
+--------------------------------------------------------
+
+  Virtual Address (VA):       0x2A13  →  Binary: 0010101000010011
+                             [Page#][ Offset ]
+                             [  2A  ][  13  ]
+
+  - Page Number (VPN):        0x2A = 42
+  - Offset:                   0x013 = 19
+
+--------------------------------------------------------
+
+Step 2: Page Table Lookup
+-------------------------
+  Let's say Page Table Entry[42] → Physical Frame #5
+
+--------------------------------------------------------
+
+Step 3: Compute Physical Address
+-------------------------------
+  Physical Frame = 5 × 4KB = 5 × 4096 = 20480
+  Offset = 19
+
+  → Physical Address (PA) = 20480 + 19 = **20499 (decimal)** = **0x5013 (hex)**
+
+```
+
 #### how these address transalation takes place.
 
 
