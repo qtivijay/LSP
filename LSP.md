@@ -454,7 +454,17 @@ Step 3: Compute Physical Address
   → Physical Address (PA) = 20480 + 19 = **20499 (decimal)** = **0x5013 (hex)**
 
 ```
+----
+- when new child process is created , pagetable of parent process PCB is copied to child process pagetable PCB.
+- Same memory segments will be used by both parent and child process until there is write operation.
 
-#### how these address transalation takes place.
+```  
+| Time         | Parent Maps To     | Child Maps To      | Physically Shared? |
+|--------------|--------------------|---------------------|---------------------|
+| Before fork  | Frame#42           | —                   | No                  |
+| After fork   | Frame#42 (COW)     | Frame#42 (COW)      | Yes                 |
+| After COW    | Frame#42           | Frame#55            | No (copied)         |
+```
+- when child or parent process tries to write. COW will be applied - First new memory segement is created , page table is updated with new address and then contents will be copied.
 
 
