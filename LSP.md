@@ -467,4 +467,37 @@ Step 3: Compute Physical Address
 ```
 - when child or parent process tries to write. COW will be applied - First new memory segement is created , page table is updated with new address and then contents will be copied.
 
+----
+### Exec family of calls
+There are four exec family of calls
+1. execl
+2. execv
+3. execlp
+4. execvp
+- These are system calls which used another version of fork called **vfork**.
+- exec family of calls internally uses **vfork**.
+- In **vfork** there will be no write-on-copy technique is applied when child process is created.
+- exec family of calls uses vfork **to execute shell programs**.
+- exec family of calls can replace the complete process image with a new program.
+- The memory segments in userspace like data,text bss,stack ,heap are also called as **process image**.
+```
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+    pid_t pid = vfork();  // Child shares address space with parent
+
+    if (pid == 0) {
+        // This replaces the process image with /bin/ls
+        execl("/bin/ls", "ls", "-l", NULL);
+
+        // If execl fails
+        _exit(1);
+    } else {
+        // Parent waits until child calls exec or _exit
+    }
+
+    return 0;
+}
+```
 
