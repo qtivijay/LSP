@@ -500,4 +500,11 @@ int main() {
     return 0;
 }
 ```
-
+### 📌 Syntax
+```
+int execl(const char *path, const char *arg0, ..., (char *)NULL);
+```
+- path: Full path to the executable (e.g., "/bin/ls").
+- arg0: The program name as seen in argv[0] (e.g., "ls").
+- arg1, arg2, ..., argn: Additional arguments passed to the new process.
+- (char *)NULL: Mandatory terminator of the argument list.
