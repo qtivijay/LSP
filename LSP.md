@@ -474,12 +474,42 @@ There are four exec family of calls
 2. execv
 3. execlp
 4. execvp
-- These are system calls which used another version of fork called **vfork**.
-- exec family of calls internally uses **vfork**.
-- In **vfork** there will be no write-on-copy technique is applied when child process is created.
-- exec family of calls uses vfork **to execute shell programs**.
-- exec family of calls can replace the complete process image with a new program.
 - The memory segments in userspace like data,text bss,stack ,heap are also called as **process image**.
+- exec family of calls can replace the complete process image with a new program.
+- exec family of calls used **to execute shell programs**.
+- for the above 4 funtions - input arguments are different.
+
+### 📌 Syntax
+```
+int execl(const char *path, const char *arg0, ..., (char *)NULL);
+```
+- path: Full path to the executable (e.g., "/bin/ls").
+- arg0: The program name as seen in argv[0] (e.g., "ls").
+- arg1, arg2, ..., argn: Additional arguments passed to the new process.
+- (char *)NULL: Mandatory terminator of the argument list.
+
+**example**:
+```
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+void main()
+{
+ printf("programming starting \n");
+ execl("/bin/ls","ls",NULL);
+ printf("programming completed \n");
+}
+```
+**output**:
+```
+programming starting 
+a.out		demo.cpp	fork.c		mthread.c	vfork.c
+demo		exec.c		mthread		sample.c	wait.c
+```
+
+- Another version of fork called **vfork**.In **vfork** there will be no write-on-copy technique is applied when child process is created.
+
 ```
 #include <unistd.h>
 #include <sys/types.h>
@@ -500,11 +530,34 @@ int main() {
     return 0;
 }
 ```
-### 📌 Syntax
+### execv()
 ```
-int execl(const char *path, const char *arg0, ..., (char *)NULL);
+int execv(const char *path, char *const argv[]);
 ```
 - path: Full path to the executable (e.g., "/bin/ls").
-- arg0: The program name as seen in argv[0] (e.g., "ls").
-- arg1, arg2, ..., argn: Additional arguments passed to the new process.
-- (char *)NULL: Mandatory terminator of the argument list.
+- argv[]: Array of strings representing command-line arguments. Must be null-terminated.
+
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    char *args[] = { "ls", "-l", NULL };  // argv[0] is usually the program name
+    execv("/bin/ls", args);
+
+    // If execv fails
+    perror("execv failed");
+    return 1;
+}
+```
+output:
+```
+total 272
+-rwxr-xr-x  1 vijayg  staff  33608  5 Jul 07:41 a.out
+...
+
+```
+- The current process is replaced by /bin/ls.
+- The arguments "ls" and "-l" are passed to it.
+- If execv() succeeds, the rest of the code (like perror) is never executed.
+- If it fails (e.g., wrong path), it returns -1 and sets errno.
