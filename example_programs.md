@@ -1,5 +1,7 @@
 ## what is the output of the program
-'''
+
+```
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -22,4 +24,5 @@ int main() {
     if (WIFEXITED(status)) {
         printf("child execution is done");
     }
+
 ```
