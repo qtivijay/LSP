@@ -1,4 +1,4 @@
-## what is the output of the program
+## what is the X value printed in the output ..?
 
 ```
 
