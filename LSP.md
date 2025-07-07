@@ -561,3 +561,71 @@ total 272
 - The arguments "ls" and "-l" are passed to it.
 - If execv() succeeds, the rest of the code (like perror) is never executed.
 - If it fails (e.g., wrong path), it returns -1 and sets errno.
+
+# 🧠 Linux `exec` Family – Comparison & Examples
+
+The `exec` family of functions replaces the current process image with a new one. If successful, the process does **not return** to the caller.
+
+---
+
+## 🔍 Comparison Table
+
+| Function    | Argument Style      | Searches `PATH` | Executable Path Needed |
+|-------------|----------------------|------------------|--------------------------|
+| `execl()`    | List of strings       | ❌ No             | ✅ Yes (`/bin/ls`)       |
+| `execv()`    | Array of strings      | ❌ No             | ✅ Yes (`/bin/ls`)       |
+| `execlp()`   | List of strings       | ✅ Yes            | ❌ No (`ls` is fine)     |
+| `execvp()`   | Array of strings      | ✅ Yes            | ❌ No (`ls` is fine)     |
+
+---
+```
+#include <unistd.h>
+
+int main() {
+    execlp("ls", "ls", "-l", (char *)NULL);
+    return 0;
+}
+```
+```
+#include <unistd.h>
+
+int main() {
+    char *args[] = {"ls", "-l", NULL};
+    execvp("ls", args);
+    return 0;
+}
+
+```
+
+# ⚠️ Issue: Using `exec()` Without `fork()` in Linux
+
+The `exec` family of functions replaces the current process image with a new one. If used without a prior `fork()`, your process gets **irreversibly replaced**, resulting in several limitations.
+
+---
+
+## 🧨 What Happens Without `fork()`
+
+- The current program is **terminated** and replaced by the new program.
+- All code after `exec()` is never executed if `exec()` succeeds.
+- There's **no parent process** to monitor, wait for, or clean up.
+- No ability to handle failures gracefully or spawn multiple programs.
+
+---
+
+## 🔎 Example: Direct `execvp()` Usage
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    printf("Starting process...\n");
+
+    char *args[] = {"ls", "-l", NULL};
+    execvp("ls", args); // Replaces current process with 'ls'
+
+    // This line will NEVER run if execvp succeeds
+    printf("This will not print.\n");
+
+    return 0;
+}
