@@ -1,0 +1,15 @@
+# File Management Subsystem
+- File management susbsystem is responsible for File I/O operations.
+- In PCB there is member called **file descriptor table** or **fd table** , it is maintained by file management subsystem.
+- fd table keep track of opened file information.
+- In fdtable each index will contains file descriptor associated with opened file.
+- **interview question** - what are default file descriptors which are opened in executable file...?
+  - By Default 0th, 1st ,2nd index of fdtable are already opened with stdin , stdout ,stderr . First three file descriptors are opened in executable file with stdin,stdout,stderr.
+- All these stdin,stdout,stderr are associated with console shell prompt.
+  - Any input you are taking from linux shell or terminal is through stdin.
+  - Any output you are printing in linux shell or terminal is through stdout.
+  - Any error you are printing in linux shell or terminal is through stderr.
+- **interview question** - who is going to open these three fd's ..?
+  - when you start to execute a program , example : "./a.out".
+  - we will start from console or terminal , **linux shell or terminal  is parent process of ./a.out**.
+  - most of contents(including fd table) of parent's PCB copied to child PCB.  
